@@ -1,0 +1,24 @@
+{
+    "name": "Edunext Automation Extensions",
+    "description": "This extension automate various mundane tasks like auto grade on groupmate, ...",
+    "version": "1.0",
+    "manifest_version": 3,
+    "host_permissions": ["*://*.edunext.vn/"],
+    "permissions": ["contextMenus", "webRequest", "scripting"],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://*.edunext.vn/*"],
+            "js": ["contentscript.js"],
+            "run_at": "document_start"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": ["injectedScrpit.js"],
+            "matches": ["<all_urls>"]
+        }
+    ]
+}

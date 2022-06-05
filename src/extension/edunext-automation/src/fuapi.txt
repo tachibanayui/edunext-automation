@@ -1,0 +1,64 @@
+export const freturn = async <T>(api: Response) => {
+    const result = await api.json();
+    const error = result?.message;
+    if (error) throw new Error(error);
+    else return result as T;
+}
+
+export interface EvaluateInsideGroupItem {
+    userId: number;
+    cooperativePoint: number;
+    goodPoint: number;
+    hardWorkingPoint: number;
+}
+
+
+export const evaluateInsideGroup = async (data: EvaluateInsideGroupItem[], activityId: string, classId: string, groupId: string) => {
+    // const api = await fetch(
+    //     `https://fuapi.edunext.vn/learn/v2/classes/presentcritical/evaluate-inside-group?activityId=${activityId}&classId=${classId}&groupid=${groupId}`,
+    //     {
+    //         method: "POST",
+    //         headers: [
+    //             [ "content-type", "application/json" ]
+    //         ],
+    //         body: JSON.stringify(data)
+    //     }
+    // );
+
+    (EDNCommon as any).Ajax({
+            method: "POST",
+            url: EDNConfig.ApiUrl.evulateInsideGroup(activityId, classId, groupId),
+            contentType: 'application/json',
+
+    return await freturn(api);
+};
+
+
+export interface GetEvaluateInsideGroupResponse {
+    success: boolean;
+    message: string;
+    code: number;
+    callBackFunction: null;
+    data: {
+        rollNumber: string;
+        userId: number;
+        fullName: string;
+        hardWorkingPoint: number;
+        goodPoint: number;
+        cooperativePoint: number;
+        totalPoint: number;
+    }[];
+    metaData: {
+        total: number;
+        pageTotal: number;
+        pageSize: number;
+    };
+}
+
+export const getEvaluateInsideGroup = async (activityId: string, classId: string, groupId: string) => {
+    return await freturn<GetEvaluateInsideGroupResponse>(
+        await fetch(
+            `https://fuapi.edunext.vn/learn/v2/classes/presentcritical/get-evaluate-inside-group-score?activityId=${activityId}&classId=${classId}&groupid=${groupId}`
+        )
+    );
+};
