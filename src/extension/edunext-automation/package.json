@@ -9,7 +9,7 @@
     "build": "webpack --config webpack.prod.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "sharpi",
   "license": "ISC",
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0",

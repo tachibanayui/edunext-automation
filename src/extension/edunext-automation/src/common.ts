@@ -9,7 +9,7 @@ interface ForwardedContextMenuMessage {
 }
 
 interface InjectScript {
-    type: "InjectScript"
+    type: "InjectScript";
 }
 
 interface InjectScriptResponse {
@@ -37,20 +37,21 @@ const handlePrintEdn: NativeOnClickCallback = (info, tab) => {
     }
 };
 
-
 const callFromMain = (tabId: number, func: (...args: any[]) => any) => {
     Browser.scripting.executeScript({
         world: "MAIN" as any, // Not officially supported!
         target: { tabId: tabId },
-        func: func
-    })
-}
+        func: func,
+    });
+};
 
 export const menu = defineMenu([
     {
+        id: "edna-root",
         title: "EduNext Automation...",
+        contexts: ["all"],
         onClicked: (info, tab) => handleForwardContextMenu(info, tab),
-        contexts: ["page"],
+        inlineGroup: { groupId: "global", contexts: ["all"] },
         items: [
             {
                 id: "auto-grade-activity",
@@ -102,6 +103,13 @@ export const menu = defineMenu([
                 title: "Distribute stars evenly (live)",
             },
             { type: "separator" },
+            {
+                id: "reveal-names",
+                title: "Reveal groupmate names",
+                onClicked: (info, tab) =>
+                    tab?.id && callFromMain(tab.id, () => (window as any).EDNAutomation.handleRevealGroupMate()),
+            },
+
             {
                 title: "Autofill",
                 items: [

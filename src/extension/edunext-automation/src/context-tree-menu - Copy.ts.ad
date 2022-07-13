@@ -1,5 +1,3 @@
-// TODO: show hide item based on url
-
 import Browser from "webextension-polyfill";
 const rid: () => string = require("randomid");
 
@@ -82,7 +80,7 @@ const createMenu0 = <T extends string>(
             }
         } else {
             const id = x.id ?? rid();
-            const { items, inlineGroup, onClicked, onCreated, ...rest } = { ...extraFields, ...x } as MenuItem<T>;
+            const { items, onClicked, onCreated, ...rest } = { ...extraFields, ...x } as MenuItem<T>;
             Browser.contextMenus.create(
                 {
                     id,
@@ -94,7 +92,7 @@ const createMenu0 = <T extends string>(
 
             lookups[id] = { handler: onClicked, handledParentId };
             if (items) {
-                createMenu0(items, lookups, declaredGroups, id, onClicked ? id : handledParentId, inlineGroup ?? group);
+                createMenu0(items, lookups, declaredGroups, id, onClicked ? id : handledParentId);
             }
         }
     }
@@ -149,20 +147,7 @@ type NativeMenu<T extends string> = NativeMenu0 & {
     onClicked?: NativeOnClickCallback;
 };
 
-/**
- * Represent a context menu item in the browser
- */
-export type MenuItem<T extends string> = NativeMenu<T> & {
-    /**
-     * The sub-menu items. Every item in the array will have the parentId field set to this item's id.
-     */
-    items?: Menu<T>
-
-    /**
-     * Syntax sugar for groups.
-     */
-    inlineGroup?: Group<T>
-};
+type MenuItem<T extends string> = NativeMenu<T> & { items?: Menu<T> };
 
 /**
  * A group is a container that menu items inside it will inherrit properties defined in group.
@@ -173,38 +158,11 @@ export type MenuItem<T extends string> = NativeMenu<T> & {
  *
  * Note: a group will not inherrit properties from their parent
  */
-export type Group<T extends string> = NativeMenu<T> & {
-    /**
-     * The id of the group. If not specified, the group will be treated as a MenuItem
-     */
+type Group<T extends string> = NativeMenu<T> & {
     groupId?: string;
-    /**
-     * Group items will inherrit properties from the group. 
-     * Note that a group is not a MenuItem so it isn't the parent of the group items
-     */
     groupItems?: Menu<T>;
-
-    /**
-     * Sepcify how group item and menu item merge when both are specified
-     * - "append-start": group item will be prepended to menu item</li>
-     * - "append-end": group item will be appended to menu item
-     * - "ignored": group item will be ignored
-     * @default "ignored"
-     */
-    //itemResolutionMode?: "append-start" | "append-end" | "ignored";
-
-    /**
-     * Behave the same as {@link MenuItem.items} but their id and parentId
-     *  will be evaluated based on the context of the menu item inherriting this group
-     */
-    //items?: Menu<T>
-    
-    /**
-     * -------------------------
-     * 
-     * Warning: Use groupId field instead, this field is ignored
-     */
-    id?: undefined;
+    items: undefined;
+    id: undefined;
     /**
      * Id of groups this group will inherrit properties from.
      *

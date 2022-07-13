@@ -4,20 +4,27 @@ import { GetSessionActivityDetailResponse } from "../fuapi";
 console.log("Injected!");
 
 export var EDNAutomation = {
-    maxScore: {
-        evaluateInsideGroupItem: (userId: number): fuapi.EvaluateInsideGroupItem => ({
-            userId: userId,
-            cooperativePoint: 5,
-            goodPoint: 5,
-            hardWorkingPoint: 5,
-        }),
+    getCommentFromSelection: () => {
+        const unwind = (node: HTMLElement | null | undefined): HTMLElement | null => {
+            let val;
+            if (!node) {
+                return null;
+            } else if (node.tagName.toUpperCase() === "LI" && (val = node.attributes['data-id' as any].value)) {
+                return node;
+            } else {
+                return unwind(node.parentElement);
+            }
+        }
+
+        const selection = window.getSelection();
+        return unwind(selection?.focusNode as HTMLElement);
     },
     getParamsOnActitvity: function (action: string) {
         const matches = Array.from(window.location.href.matchAll(/activity\?sessionid=(\d+)&activityId=(\d+)/gi))?.[0];
         if (!matches) {
             alert(
                 "Please open an activity page to use this feature!\n" +
-                    "Make sure your url bar show something like: https://fu.edunext.vn/en/session/activity?sessionid=110765&activityId=737622"
+                    "Make sure your url bar show something like: https://fu.edunext.vn/en/session/activity?sessionid=123456&activityId=123456"
             );
             return { confirmation: false, sessionId: 0, activityId: 0 };
         }
@@ -32,13 +39,13 @@ export var EDNAutomation = {
         }
     },
     getParamsOnSlot: function (action: string) {
-        const sessionIdStr = window.location.href.matchAll(/sessionId=(\d+)/gi)?.next().value[1];
+        const sessionIdStr = window.location.href.matchAll(/sessionId=(\d+)/gi)?.next().value?.[1];
         if (!sessionIdStr) {
             alert(
                 "Please open an activity page or slot detail page to use this feature!\n" +
                     "Make sure your url bar show something like:\n" +
-                    "https://fu.edunext.vn/en/session/activity?sessionid=110765&activityId=737622\n" +
-                    "https://fu.edunext.vn/en/session/detail?sessionId=110765"
+                    "https://fu.edunext.vn/en/session/activity?sessionid=123456&activityId=123455\n" +
+                    "https://fu.edunext.vn/en/session/detail?sessionId=123456"
             );
 
             return { confirmation: false, sessionId: 0 };
@@ -57,11 +64,11 @@ export var EDNAutomation = {
              .matchAll(/\/course\/([a-z0-9-]+).*\?classId=(\d+)/g)
             ?.next().value;
         
-        if (matches) {
+        if (!matches) {
             alert(
                 "Please open a course page to use this feature!\n" +
                     "Make sure your url bar show something like:\n" +
-                    "https://fu.edunext.vn/en/course/operating-systems?classId=422\n"
+                    "https://fu.edunext.vn/en/course/operating-systems?classId=123\n"
             );
             return { confirmation: false, permalink: "", classId: 0, courseId: 0 };
         }
@@ -81,11 +88,18 @@ export var EDNAutomation = {
         alert(`Done! Read console to for details`);
     },
     evaluateActivity: async function (activityName: string, activityId: number, classId: number, groupId: number) {
+        const evaluateInsideGroupItem = (userId: number): fuapi.EvaluateInsideGroupItem => ({
+            userId: userId,
+            cooperativePoint: 5,
+            goodPoint: 5,
+            hardWorkingPoint: 5,
+        });
+            
         try {
             console.log(`Evaluating activity: ${activityName} (id: ${activityId})`);
             const groupMembers = await fuapi.getEvaluateInsideGroup(activityId, classId, groupId);
             const userIds = groupMembers.data.map((x) => x.userId);
-            const grades = userIds.map((x) => this.maxScore.evaluateInsideGroupItem(x));
+            const grades = userIds.map((x) => evaluateInsideGroupItem(x));
             await fuapi.evaluateInsideGroup(grades, activityId, classId, groupId);
             return { activityName: activityName, memberCount: groupMembers.data.length };
         } catch (e) {
@@ -434,9 +448,50 @@ export var EDNAutomation = {
         const minLength = prompt("Please enter the minimum comment length to autofill: (default: 15)", "15") ?? "15";
         const result = await this.autofillClass(permalink, classId, courseId, parseInt(minLength));
         this.printResult(result);
-    }
+    },
+    revealGroupMate: async function (contextId: number, courseId: number, classId: number, groupId: number) {
+        const cmts = await this.getAllComments(contextId, courseId, groupId);
+        const members = await fuapi.getRoomMember(`rc_${classId}_ClassId`);
+
+        const nameLookup = [...cmts.groupComments, ...cmts.publicComments]
+            .map(x => ({
+                id: x.Id,
+                creatorId: x.Creator,
+                content: x.Content,
+                creator: members.members.find(y => y.id === x.Creator)?.fullName,
+                mail: members.members.find(y => y.id === x.Creator)?.username
+            }))
+        
+        const commentsHtml = Array.from(document.getElementById("comment-list")?.children ?? []);
+
+        commentsHtml.forEach(x => {
+            const commentId = parseInt(x.attributes["data-id" as any]?.value ?? "0");
+            const entry = nameLookup.find(y => y.id === commentId);
+            if (entry) {
+                const usernameHtml = x.querySelector("span.user-name");
+                if (usernameHtml)
+                    usernameHtml.innerHTML = `${entry.creator} <span style="color: gray; font-size: 10px">(${entry.creatorId}, ${entry.mail})</span>`;
+            }
+        });
+
+        
+        return nameLookup;
+    },
+    handleRevealGroupMate: async function () {
+        const { confirmation, activityId, sessionId } = this.getParamsOnActitvity("Reveal groupmate name");
+        if (!confirmation) return;
+
+        const act = (await fuapi.getSessionActivityDetail(activityId, sessionId)).data;
+        const rs = await this.revealGroupMate(
+            act.activity.id,
+            act.activity.courseId,
+            act.userRoleInSession.classId,
+            act.groupId
+        );
+        this.printResult(rs);
+    },
 };
 
 Object.assign(window, { EDNAutomation });
 
-export {};
+export { };

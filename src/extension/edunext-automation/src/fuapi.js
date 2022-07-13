@@ -116,3 +116,15 @@ export const addComment = async (payload) =>
             Error: (ex) => reject(ex),
         });
     });
+
+export const getRoomMember = async (roomId) =>
+    await new Promise((resolve, reject) => {
+        EDNCommon.Ajax({
+            method: "GET",
+            url: EDNChatBox.Api.getRoomInfo(roomId),
+            unformatedData: true,
+            contentType: "application/json",
+            Success: (data) => resolve(data),
+            Error: (ex) => reject(ex)
+        })
+    });

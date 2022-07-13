@@ -207,7 +207,7 @@ export const getComments: (
     courseId: number,
     parentId: number,
     isPublic: boolean,
-    pageIndex = 1,
+    pageIndex = 1
 ) => Promise<GetCommentsResponse>;
 
 export interface VoteCommentPayload {
@@ -273,3 +273,25 @@ export interface AddCommentResponse {
 }
 
 export const addComment: (payload: AddCommentPayload) => Promise<AddCommentResponse>;
+
+export interface GetRoomMemberResponse {
+    id: string;
+    name: string;
+    members: {
+        id: number;
+        active: boolean;
+        username: string;
+        fullName: string;
+        avatarUrl: string;
+        addedBy: number;
+    }[];
+    ownerId: number;
+    createdTime: string;
+    lastMessageTimestamp: string;
+    disableMemberUpdate: boolean;
+    contextId: string;
+    contextObjectId: string;
+    roomType: string;
+}
+
+export const getRoomMember: (roomId: string) => Promise<GetRoomMemberResponse>; 
