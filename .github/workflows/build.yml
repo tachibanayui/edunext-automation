@@ -46,12 +46,12 @@ jobs:
     - name: install deps
       if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci
-      working-directory: ${pwd}
+      working-directory: ${{ env.pwd }}
       
 
     - name: Build
       run: npm build
-      working-directory: ${pwd}
+      working-directory: ${{ env.pwd }}
       
     - name: Upload build artifact
       uses: actions/upload-artifact@v3.1.0
