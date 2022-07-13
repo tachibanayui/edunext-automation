@@ -50,14 +50,14 @@ jobs:
       
 
     - name: Build
-      run: npm build
+      run: npm run build
       working-directory: ${{ env.pwd }}
       
     - name: Upload build artifact
       uses: actions/upload-artifact@v3.1.0
       with:
         name: extension-unpacked
-        path: ./src/extension/edunext-automation/dist/
+        path: ${{ env.pwd }}/dist/
         warn: Cannot retrive extension!
         if-no-files-found: warn
         retention-days: 30
