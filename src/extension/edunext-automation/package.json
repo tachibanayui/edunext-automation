@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "sharpi",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
