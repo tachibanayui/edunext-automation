@@ -13,6 +13,9 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
+        
+    env:
+      pwd: ./src/extension/edunext-automation
     
     steps:
     - uses: actions/checkout@v3
@@ -43,15 +46,18 @@ jobs:
     - name: install deps
       if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci
+      working-directory: ${pwd}
+      
 
     - name: Build
       run: npm build
+      working-directory: ${pwd}
       
     - name: Upload build artifact
       uses: actions/upload-artifact@v3.1.0
       with:
         name: extension-unpacked
-        path: ./dist/
+        path: ./src/extension/edunext-automation/dist/
         warn: Cannot retrive extension!
         if-no-files-found: warn
         retention-days: 30
