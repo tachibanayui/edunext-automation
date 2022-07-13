@@ -19,6 +19,9 @@ jobs:
     
     - name: Set working dir
       run: cd ./src/extension/edunext-automation
+      
+    - name: Tell me cwd
+      run: pwd
     
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -30,7 +33,7 @@ jobs:
       run: |
         echo "::set-output name=dir::$(npm config get cache)"
     - uses: actions/cache@v3
-      id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+      id: npm-cache
       with:
         path: ${{ steps.npm-cache-dir.outputs.dir }}
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
