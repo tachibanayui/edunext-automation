@@ -1,7 +1,6 @@
 import Browser from "webextension-polyfill";
 import { defineMenu, NativeOnClickCallback, RetriveMenuId } from "./context-tree-menu";
 
-console.log("S");
 
 interface ForwardedContextMenuMessage {
     type: "FowardedContextMenu";

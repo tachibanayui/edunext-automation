@@ -30,4 +30,4 @@ Browser.runtime.onMessage.addListener(async (m: MessagePayload, s) => {
     }
 });
 
-console.log("index");
+console.log("Backgroud script loaded!");
