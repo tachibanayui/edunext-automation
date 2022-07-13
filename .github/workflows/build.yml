@@ -58,6 +58,5 @@ jobs:
       with:
         name: extension-unpacked
         path: ${{ env.pwd }}/dist/
-        warn: Cannot retrive extension!
         if-no-files-found: warn
         retention-days: 30
