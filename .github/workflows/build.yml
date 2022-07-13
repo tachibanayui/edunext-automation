@@ -1,0 +1,57 @@
+name: NodeJS with Webpack
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        
+    env:
+      pwd: ./src/extension/edunext-automation
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+#     - name: Get npm cache directory
+#       id: npm-cache-dir
+#       run: |
+#         echo "::set-output name=dir::$(npm config get cache)"
+#     - uses: actions/cache@v3
+#       id: npm-cache
+#       with:
+#         path: ${{ steps.npm-cache-dir.outputs.dir }}
+#         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+#         restore-keys: |
+#           ${{ runner.os }}-node-
+        
+    - name: install deps
+#      if: steps.npm-cache.outputs.cache-hit != 'true'
+      run: npm ci
+      working-directory: ${{ env.pwd }}
+      
+
+    - name: Build
+      run: npm run build
+      working-directory: ${{ env.pwd }}
+      
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: extension-unpacked
+        path: ${{ env.pwd }}/dist/
+        if-no-files-found: warn
+        retention-days: 30
