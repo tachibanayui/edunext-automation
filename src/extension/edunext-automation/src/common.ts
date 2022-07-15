@@ -102,13 +102,12 @@ export const menu = defineMenu([
                 title: "Distribute stars evenly (live)",
             },
             { type: "separator" },
-            {
-                id: "reveal-names",
-                title: "Reveal groupmate names",
-                onClicked: (info, tab) =>
-                    tab?.id && callFromMain(tab.id, () => (window as any).EDNAutomation.handleRevealGroupMate()),
-            },
-
+            // {
+            //     id: "reveal-names",
+            //     title: "Reveal groupmate names",
+            //     onClicked: (info, tab) =>
+            //         tab?.id && callFromMain(tab.id, () => (window as any).EDNAutomation.handleRevealGroupMate()),
+            // },
             {
                 title: "Autofill",
                 items: [
