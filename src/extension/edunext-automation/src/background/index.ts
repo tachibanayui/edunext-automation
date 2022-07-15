@@ -2,8 +2,12 @@
 import Browser from "webextension-polyfill";
 import { menu, MessagePayload } from "../common";
 
-Browser.contextMenus.remove("edna-root");
-menu();
+try {
+    Browser.contextMenus.remove("edna-root");
+    menu();
+} catch (e) {
+    console.log("Error building context menu", e);
+}
 
 Browser.runtime.onMessage.addListener(async (m: MessagePayload, s) => {
     switch (m.type) {
