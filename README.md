@@ -33,4 +33,4 @@ If you want to contribute to the codebase, create a fork and open a pull request
 It is highly recommended that you open an issue before working on your fork to avoid multiple people writing the same code
 
 ## License
-This repo is distributed under the MIT License. See `LICENSE.txt` for more information.
+This repo is distributed under the Apache-2.0 License. See `LICENSE.txt` for more information.
