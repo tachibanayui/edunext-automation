@@ -25,7 +25,7 @@ This is a Chrome extension to automate various action on fu.edunext.vn such as a
 3. Run this command below for development
 ```npm start```
 4. Run this command for a production build
-```npm run build```
+```npm run build ```
 
 ## Contributing
 All contribution are welcome! If you spot a bug, create an new issue [here](https://github.com/tachibanayui/edunext-automation/issues/new). 
